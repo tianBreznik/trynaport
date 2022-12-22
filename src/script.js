@@ -302,7 +302,7 @@ const sketch = function(p) {
     p.noFill();
     x0 = y0 = 0;
     inkels = [];
-    brush.resize(dia * brush.width, dia * brush.height);
+    brush.resize(dia * brush.width * 2, dia * brush.height * 2);
     //Loads the pixel data of the current display window into the pixels[] array.
     brush.loadPixels();
     //Creates a new PImage (the datatype for storing images)
@@ -321,7 +321,6 @@ const sketch = function(p) {
       model.setPixelFactor(1);
       modelLoaded = true;
       restart();
-      console.log('SketchRNN model loaded.');
     });
     //p.background(255);
   };
@@ -340,14 +339,13 @@ const sketch = function(p) {
         console.log('SketchRNN model loaded.');
         // Initialize the scale factor for the model. Bigger -> large outputs
         model.setPixelFactor(modelpixelsizes[availableModels[choice]]);
-        
         restart();
     });
     dia = modelbrushdiams[availableModels[choice]]
     brush.resize(dia * brw, dia * brh);
     brush.loadPixels();
     drawing = true;
-    a = p.random(0.5, 1);
+    a = p.random(0.3, 0.9);
     r = p.random(1);
     g = p.random(1);
     b = p.random(1);
@@ -361,32 +359,25 @@ const sketch = function(p) {
 
   // Drawing loop.
   p.draw = function() {
+    //console.log(modelLoaded);
     if (!modelLoaded) {
+      console.log("model not loaded");
       return;
     }
 
     // If we finished the previous drawing, start a new one.
     if (previousPen[PEN.END] === 1) {
+      console.log("start new pls");
       restart();
     }
 
-    // New state.
-    [dx, dy, ...pen] = sampleNewState();
-
     // Only draw on the paper if the pen is still touching the paper.
     //if (previousPen[PEN.DOWN] == 1) {
-    if(drawing){
+    if(drawing & modelLoaded){
+        // New state.
+        [dx, dy, ...pen] = sampleNewState();
         var d = p.dist(x+dx, y+dy, x, y);
-        console.log(d)
-        // for (var i = 1; i < d; i++) {
-        //   //console.log(i);
-        //   soak(brush, x + dx - i * (dx / d), y + dy - i * (dy / d));
-        // }
-        // soak(brush, x+dx, y+dy);
-        //var d = p.dist(p.mouseX, p.mouseY, p.pmouseX, p.pmouseY);
         for (var i = 1; i < d; i++) {
-                //呼叫soak function(筆刷, 位置, 位置)，中間分好幾段(不含前後)
-          //soak(brush, p.mouseX - i * (p.mouseX - p.pmouseX) / d, p.mouseY - i * (p.mouseY - p.pmouseY) / d);
           soak(brush, x + dx - i * (dx / d), y + dy - i * (dy / d));
         }
         soak(brush, x+dx, y+dy);
@@ -466,8 +457,32 @@ const sketch = function(p) {
   }
 
   function restart() {
+    modelLoaded = false;
     [dx, dy, ...pen] = model.zeroInput();  // Reset the pen state.
     modelState = model.zeroState();  // Reset the model state.
+    if (model) {
+        console.log("disposed");
+        model.dispose();
+    }
+    var choice = parseInt(Math.random() * nrmodels);
+    model = new ms.SketchRNN(`${BASE_URL}${availableModels[choice]}.gen.json`);
+    Promise.all([model.initialize()]).then(function() {
+        modelLoaded = true;
+        console.log('SketchRNN model loaded.');
+        // Initialize the scale factor for the model. Bigger -> large outputs
+        // [dx, dy, ...pen] = model.zeroInput();  // Reset the pen state.
+        // modelState = model.zeroState();  // Reset the model state. 
+        model.setPixelFactor(modelpixelsizes[availableModels[choice]]);   
+    });
+    dia = modelbrushdiams[availableModels[choice]]
+    //const multiplier = parseInt(Math.random() * 3);
+    brush.resize(dia * brw, dia * brh);
+    brush.loadPixels();
+    drawing = true;
+    a = p.random(0.3, 0.9);
+    r = p.random(1);
+    g = p.random(1);
+    b = p.random(1);
     setupNewDrawing();
   }
 };
