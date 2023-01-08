@@ -286,9 +286,22 @@ const sketch = function(p) {
 
     const containerSize = document.getElementById('sketch').getBoundingClientRect();
     // Initialize the canvas.
-    const screenWidth = window.innerWidth*0.5
+    var screenWidth;
+    if(detectMob()){
+        console.log("mobile");
+        screenWidth = window.innerWidth;
+    }
+    else{
+        console.log("not mobile");
+        screenWidth = window.innerWidth*0.5;
+    }
+    console.log(window.innerWidth);
+    console.log(screenWidth);
     const screenHeight = window.innerHeight * 0.994;
-    p.createCanvas(screenWidth, screenHeight);
+    var canvas = p.createCanvas(screenWidth, screenHeight);
+    console.log(canvas.id);
+    canvas.id = "drawing"
+    console.log(canvas.id)
     p.frameRate(20);
 
     brw=brush.width;
@@ -296,7 +309,7 @@ const sketch = function(p) {
     p.imageMode(p.CENTER);
     //p.rectMode(p.CENTER);
 
-    w = window.innerWidth*0.5;
+    w = window.innerWidth;
     h = window.innerHeight;
 
     p.noFill();
@@ -359,6 +372,7 @@ const sketch = function(p) {
 
   // Drawing loop.
   p.draw = function() {
+    //p.background(204, 204, 204); //remove if u dont want flashing
     //console.log(modelLoaded);
     if (!modelLoaded) {
       console.log("model not loaded");
@@ -386,7 +400,7 @@ const sketch = function(p) {
       for (var i = 0; i < w * h; i++) {
 		if (inkels[i].wetness >= 3) inkels[i].wetness -=3;
         else inkels[i].wetness = 0;
-		if (inkels[i].wetness > 200) { //自己很濕
+		if (inkels[i].wetness > 200) {  
             var n = 0;
             var Aa = inkels[i].a;
             var Ar = inkels[i].r;
@@ -413,10 +427,10 @@ const sketch = function(p) {
             inkels[i].a -= n * 0.01 * Aa; 
 		    inkels[i].wetness -= n * 0.05 * wt;
           } //if(inkels[i].wetness > 200)
-          rimg.pixels[4 * i] = 255 * inkels[i].r;
-          rimg.pixels[4 * i + 1] = 255 * inkels[i].g;
-          rimg.pixels[4 * i + 2] = 255 * inkels[i].b;
-          rimg.pixels[4 * i + 3] = 255 * inkels[i].a;
+          rimg.pixels[4 * i] = 204 * inkels[i].r;
+          rimg.pixels[4 * i + 1] = 204 * inkels[i].g;
+          rimg.pixels[4 * i + 2] = 204 * inkels[i].b;
+          rimg.pixels[4 * i + 3] = 204 * inkels[i].a;
         } 
       rimg.updatePixels();
       //console.log(rimg);
@@ -429,6 +443,7 @@ const sketch = function(p) {
 
     // Update the previous pen's state to the current one we just sampled.
     previousPen = pen;
+    //p.filter(p.BLUR, 2.5);
   };
 
   /*
@@ -448,6 +463,7 @@ const sketch = function(p) {
 
   function setupNewDrawing() {
     //p.background(255, 255, 255, 255);
+    //p.background(204, 204, 204); //remove if u dont want flashing
     x = Math.random() * window.innerWidth / 2.0;
     y = Math.random() * window.innerHeight * 0.9;
     const lineColor = p.color(p.random(64, 224), p.random(64, 224), p.random(64, 224));
@@ -457,6 +473,7 @@ const sketch = function(p) {
   }
 
   function restart() {
+    //p.background(204, 204, 204); //remove if u dont want flashing
     modelLoaded = false;
     [dx, dy, ...pen] = model.zeroInput();  // Reset the pen state.
     modelState = model.zeroState();  // Reset the model state.
@@ -552,7 +569,7 @@ function soak(brush, x, y) {
           var Bg = inkels[loc].g;
           var Bb = inkels[loc].b;
           inkels[loc].wetness += brush.pixels[locb + 3]; // = (inkels[loc].wetness * inkels[loc].amount + b.pixels[locb + 3] * b.pixels[locb + 3]) / (inkels[loc].amount + b.pixels[locb + 3]);
-                  inkels[loc].r = (Ar * Aa + Br * Ba * (1 - Aa)) / Ca;
+          inkels[loc].r = (Ar * Aa + Br * Ba * (1 - Aa)) / Ca;
           inkels[loc].g = (Ag * Aa + Bg * Ba * (1 - Aa)) / Ca;
           inkels[loc].b = (Ab * Aa + Bb * Ba * (1 - Aa)) / Ca;
           inkels[loc].a = Ca;
@@ -596,6 +613,74 @@ function soak(brush, x, y) {
     return sprite;  
         
 }
+
+function detectMob() {
+    return ( ( window.innerWidth <= 500 ) && ( window.innerHeight <= 900 ) );
+}
+
+var signature1 = document.getElementById("juhica");
+signature1.addEventListener("click", function(e) {
+    if(detectMob()){
+        var e = document.getElementById("juhicatekst_mob");
+        e.classList.toggle("justDisplay_juhica");
+    }
+});
+var signature2 = document.getElementById("nazdrovje");
+signature2.addEventListener("click", function(e) {
+    if(detectMob()){
+        var e = document.getElementById("tweetext_mob");
+        e.classList.toggle("justDisplay_tweet");
+    }
+});
+var signature3 = document.getElementById("burning");
+signature3.addEventListener("click", function(e) {
+    if(detectMob()){
+        var e = document.getElementById("burningcities_mob");
+        e.classList.toggle("justDisplay_burning");
+    }
+});
+var signature4 = document.getElementById("travica");
+signature4.addEventListener("click", function(e) {
+    if(detectMob()){
+        var e = document.getElementById("spiritteatro_mob");
+        e.classList.toggle("justDisplay_burning");
+    }
+});
+var signature5 = document.getElementById("liminalikea");
+signature5.addEventListener("click", function(e) {
+    if(detectMob()){
+        var e = document.getElementById("spiritteatro_mob1");
+        e.classList.toggle("justDisplay_burning");
+    }
+});
+var signature6 = document.getElementById("teatrospirit");
+signature6.addEventListener("click", function(e) {
+    if(detectMob()){
+        var e = document.getElementById("spiritteatro_mob2");
+        e.classList.toggle("justDisplay_burning");
+    }
+});
+var signature7 = document.getElementById("infocomplex");
+signature7.addEventListener("click", function(e) {
+    if(detectMob()){
+        var e = document.getElementById("spiritteatro_mob3");
+        e.classList.toggle("justDisplay_burning");
+    }
+});
+var signature8 = document.getElementById("silvia");
+signature8.addEventListener("click", function(e) {
+    if(detectMob()){
+        var e = document.getElementById("spiritteatro_mob4");
+        e.classList.toggle("justDisplay_burning");
+    }
+});
+var signature8 = document.getElementById("grub");
+signature8.addEventListener("click", function(e) {
+    if(detectMob()){
+        var e = document.getElementById("spiritteatro_mob5");
+        e.classList.toggle("justDisplay_burning");
+    }
+});
 
   
   
