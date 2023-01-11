@@ -287,9 +287,11 @@ const sketch = function(p) {
     const containerSize = document.getElementById('sketch').getBoundingClientRect();
     // Initialize the canvas.
     var screenWidth;
+    console.log()
     if(detectMob()){
         console.log("mobile");
         screenWidth = window.innerWidth;
+        console.log(screenWidth);
     }
     else{
         console.log("not mobile");
