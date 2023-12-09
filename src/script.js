@@ -683,6 +683,21 @@ signature8.addEventListener("click", function(e) {
         e.classList.toggle("justDisplay_burning");
     }
 });
+var signature9 = document.getElementById("davidimo");
+signature9.addEventListener("click", function(e) {
+    if(detectMob()){
+        var e = document.getElementById("spiritteatro_mob6");
+        e.classList.toggle("justDisplay_burning");
+    }
+});
+
+var signature9 = document.getElementById("konjcki");
+signature9.addEventListener("click", function(e) {
+    if(detectMob()){
+        var e = document.getElementById("spiritteatro_mob7");
+        e.classList.toggle("justDisplay_burning");
+    }
+});
 
   
   
